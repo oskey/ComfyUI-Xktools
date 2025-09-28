@@ -87,7 +87,7 @@ class ChineseClipTextEncode:
             tokens = clip.tokenize("")
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
             return {
-                "ui": {"translation_result": [error_msg]},
+                "ui": {"text": [error_msg]},
                 "result": ([[cond, {"pooled_output": pooled}]], error_msg)
             }
         
@@ -95,10 +95,10 @@ class ChineseClipTextEncode:
         if not auto_translate:
             tokens = clip.tokenize(chinese_text.strip())
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-            result_text = f"使用原文: {chinese_text.strip()}"
-            print(f"[XKT翻译] {result_text}")
+            result_text = chinese_text.strip()  # Show Text直接显示原文
+            print(f"[XKT翻译] 使用原文: {chinese_text.strip()}")
             return {
-                "ui": {"translation_result": [result_text]},
+                "ui": {"text": [result_text]},
                 "result": ([[cond, {"pooled_output": pooled}]], result_text)
             }
         
@@ -109,7 +109,7 @@ class ChineseClipTextEncode:
             tokens = clip.tokenize("")
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
             return {
-                "ui": {"translation_result": [error_msg]},
+                "ui": {"text": [error_msg]},
                 "result": ([[cond, {"pooled_output": pooled}]], error_msg)
             }
         
@@ -124,10 +124,10 @@ class ChineseClipTextEncode:
             # 如果翻译失败，使用原文
             if english_text.startswith("错误：") or english_text.startswith("翻译失败："):
                 english_text = chinese_text.strip()
-                ui_text = f"翻译失败，使用原文: {english_text}"
-                print(f"[XKT翻译] {ui_text}")
+                ui_text = english_text  # Show Text直接显示原文
+                print(f"[XKT翻译] 翻译失败，使用原文: {english_text}")
             else:
-                ui_text = f"翻译结果: {english_text}"
+                ui_text = english_text  # Show Text直接显示翻译结果
                 print(f"[XKT翻译] 翻译成功: {chinese_text.strip()} -> {english_text}")
             
             # 使用翻译后的英文进行CLIP编码
@@ -136,7 +136,7 @@ class ChineseClipTextEncode:
             
             # 返回conditioning和UI显示
             return {
-                "ui": {"translation_result": [ui_text]},
+                "ui": {"text": [ui_text]},
                 "result": ([[cond, {"pooled_output": pooled}]], ui_text)
             }
             
@@ -147,7 +147,7 @@ class ChineseClipTextEncode:
             tokens = clip.tokenize(chinese_text.strip())
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
             return {
-                "ui": {"translation_result": [error_msg]},
+                "ui": {"text": [error_msg]},
                 "result": ([[cond, {"pooled_output": pooled}]], error_msg)
             }
 
