@@ -40,6 +40,12 @@ class ChineseToEnglishTranslator:
                     "default": False,
                     "label_on": "保存配置",
                     "label_off": "不保存"
+                }),
+                "translation_result": ("STRING", {
+                    "default": "翻译结果将在这里显示...",
+                    "multiline": True,
+                    "readonly": True,
+                    "placeholder": "翻译结果将在这里显示..."
                 })
             }
         }
@@ -133,7 +139,7 @@ class ChineseClipTextEncode:
     FUNCTION = "encode_with_translation"
     CATEGORY = "Xktools/翻译"
     
-    def encode_with_translation(self, clip, chinese_text, auto_translate, app_id, app_key, save_config=False):
+    def encode_with_translation(self, clip, chinese_text, auto_translate, app_id, app_key, save_config=False, translation_result="翻译结果将在这里显示..."):
         """
         翻译中文并进行CLIP编码
         
@@ -158,20 +164,30 @@ class ChineseClipTextEncode:
             # 返回空的conditioning和错误信息
             tokens = clip.tokenize("")
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-            return ([[cond, {"pooled_output": pooled}]], {"ui": {"text": [error_msg]}})
+            return {
+                "ui": {"translation_result": [error_msg]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
         
         # 如果不自动翻译，直接使用原文进行编码
         if not auto_translate:
             tokens = clip.tokenize(chinese_text.strip())
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-            return ([[cond, {"pooled_output": pooled}]], {"ui": {"text": [f"使用原文: {chinese_text.strip()}"]}})
+            result_text = f"使用原文: {chinese_text.strip()}"
+            return {
+                "ui": {"translation_result": [result_text]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
         
         if not app_id.strip() or not app_key.strip():
             error_msg = "错误：请配置百度翻译API的APP ID和密钥\n\n请访问 https://fanyi-api.baidu.com/ 申请API"
             # 返回空的conditioning和错误信息
             tokens = clip.tokenize("")
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-            return ([[cond, {"pooled_output": pooled}]], {"ui": {"text": [error_msg]}})
+            return {
+                "ui": {"translation_result": [error_msg]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
         
         # 创建翻译器实例并翻译
         translator = BaiduTranslator(app_id.strip(), app_key.strip())
@@ -191,14 +207,20 @@ class ChineseClipTextEncode:
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
             
             # 返回conditioning和UI显示
-            return ([[cond, {"pooled_output": pooled}]], {"ui": {"text": [ui_text]}})
+            return {
+                "ui": {"translation_result": [ui_text]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
             
         except Exception as e:
             error_msg = f"翻译过程中发生错误：{str(e)}"
             # 返回使用原文的conditioning和错误信息
             tokens = clip.tokenize(chinese_text.strip())
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-            return ([[cond, {"pooled_output": pooled}]], {"ui": {"text": [error_msg]}})
+            return {
+                "ui": {"translation_result": [error_msg]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
 
 
 class BatchChineseToEnglishTranslator:
