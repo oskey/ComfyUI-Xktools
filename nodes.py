@@ -318,7 +318,7 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ChineseToEnglishTranslator": "中文转英文翻译器",
-    "ChineseClipTextEncode": "中文CLIP文本编码器",
-    "BatchChineseToEnglishTranslator": "批量中文转英文翻译器"
+    "ChineseClipTextEncode": "XKT 自动翻译英文CLIP文本编码器",
+    "ChineseToEnglishTranslator": "XKT 中文转英文翻译器",
+    "BatchChineseToEnglishTranslator": "XKT 批量中文转英文翻译器"
 }
