@@ -3,6 +3,7 @@ ComfyUI 中文翻译节点
 """
 
 from .baidu_translator import BaiduTranslator
+from .config_manager import config_manager
 
 
 class ChineseToEnglishTranslator:
@@ -10,6 +11,9 @@ class ChineseToEnglishTranslator:
     
     @classmethod
     def INPUT_TYPES(cls):
+        # 获取保存的配置
+        api_config = config_manager.get_api_config()
+        
         return {
             "required": {
                 "chinese_text": ("STRING", {
@@ -18,11 +22,11 @@ class ChineseToEnglishTranslator:
                     "placeholder": "在这里输入中文提示词..."
                 }),
                 "app_id": ("STRING", {
-                    "default": "",
+                    "default": api_config.get('app_id', ''),
                     "placeholder": "请输入百度翻译API的APP ID"
                 }),
                 "app_key": ("STRING", {
-                    "default": "",
+                    "default": api_config.get('app_key', ''),
                     "placeholder": "请输入百度翻译API的密钥"
                 }),
             },
@@ -31,6 +35,11 @@ class ChineseToEnglishTranslator:
                     "default": True,
                     "label_on": "自动翻译",
                     "label_off": "手动翻译"
+                }),
+                "save_config": ("BOOLEAN", {
+                    "default": False,
+                    "label_on": "保存配置",
+                    "label_off": "不保存"
                 })
             }
         }
@@ -39,8 +48,9 @@ class ChineseToEnglishTranslator:
     RETURN_NAMES = ("english_prompt",)
     FUNCTION = "translate_text"
     CATEGORY = "Xktools/翻译"
+    OUTPUT_NODE = False
     
-    def translate_text(self, chinese_text, app_id, app_key, auto_translate=True):
+    def translate_text(self, chinese_text, app_id, app_key, auto_translate=True, save_config=False):
         """
         翻译中文文本为英文
         
@@ -49,10 +59,15 @@ class ChineseToEnglishTranslator:
             app_id (str): 百度翻译API的APP ID
             app_key (str): 百度翻译API的密钥
             auto_translate (bool): 是否自动翻译
+            save_config (bool): 是否保存配置
             
         Returns:
             tuple: 包含翻译结果的元组
         """
+        # 保存配置（如果用户选择保存）
+        if save_config and app_id.strip() and app_key.strip():
+            config_manager.save_api_config(app_id.strip(), app_key.strip())
+        
         # 如果不自动翻译，直接返回原文
         if not auto_translate:
             return (chinese_text,)
@@ -70,7 +85,8 @@ class ChineseToEnglishTranslator:
         # 执行翻译
         try:
             result = translator.translate(chinese_text.strip())
-            return (result,)
+            # 确保返回的是纯字符串，兼容CLIP节点
+            return (str(result),)
         except Exception as e:
             return (f"翻译过程中发生错误：{str(e)}",)
 
@@ -80,6 +96,9 @@ class BatchChineseToEnglishTranslator:
     
     @classmethod
     def INPUT_TYPES(cls):
+        # 获取保存的配置
+        api_config = config_manager.get_api_config()
+        
         return {
             "required": {
                 "chinese_texts": ("STRING", {
@@ -88,16 +107,23 @@ class BatchChineseToEnglishTranslator:
                     "placeholder": "每行一个中文提示词..."
                 }),
                 "app_id": ("STRING", {
-                    "default": "",
+                    "default": api_config.get('app_id', ''),
                     "placeholder": "请输入百度翻译API的APP ID"
                 }),
                 "app_key": ("STRING", {
-                    "default": "",
+                    "default": api_config.get('app_key', ''),
                     "placeholder": "请输入百度翻译API的密钥"
                 }),
                 "separator": ("STRING", {
                     "default": ", ",
                     "placeholder": "翻译结果分隔符"
+                })
+            },
+            "optional": {
+                "save_config": ("BOOLEAN", {
+                    "default": False,
+                    "label_on": "保存配置",
+                    "label_off": "不保存"
                 })
             }
         }
@@ -106,8 +132,9 @@ class BatchChineseToEnglishTranslator:
     RETURN_NAMES = ("english_prompts",)
     FUNCTION = "batch_translate"
     CATEGORY = "Xktools/翻译"
+    OUTPUT_NODE = False
     
-    def batch_translate(self, chinese_texts, app_id, app_key, separator=", "):
+    def batch_translate(self, chinese_texts, app_id, app_key, separator=", ", save_config=False):
         """
         批量翻译中文文本为英文
         
@@ -116,10 +143,15 @@ class BatchChineseToEnglishTranslator:
             app_id (str): 百度翻译API的APP ID
             app_key (str): 百度翻译API的密钥
             separator (str): 结果分隔符
+            save_config (bool): 是否保存配置
             
         Returns:
             tuple: 包含翻译结果的元组
         """
+        # 保存配置（如果用户选择保存）
+        if save_config and app_id.strip() and app_key.strip():
+            config_manager.save_api_config(app_id.strip(), app_key.strip())
+        
         # 检查输入参数
         if not chinese_texts.strip():
             return ("请输入要翻译的中文文本",)
@@ -142,14 +174,14 @@ class BatchChineseToEnglishTranslator:
             try:
                 result = translator.translate(line)
                 if result.startswith("错误：") or result.startswith("翻译失败："):
-                    return (result,)  # 如果有错误，直接返回错误信息
-                translated_results.append(result)
+                    return (str(result),)  # 如果有错误，直接返回错误信息
+                translated_results.append(str(result))
             except Exception as e:
                 return (f"翻译 '{line}' 时发生错误：{str(e)}",)
         
-        # 合并结果
+        # 合并结果，确保返回纯字符串
         final_result = separator.join(translated_results)
-        return (final_result,)
+        return (str(final_result),)
 
 
 # 节点映射

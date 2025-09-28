@@ -19,7 +19,7 @@
 ### 方法二：Git克隆
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/your-username/ComfyUI-Xktools.git
+git clone https://github.com/oskey/ComfyUI-Xktools.git
 ```
 
 ### 安装依赖
