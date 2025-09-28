@@ -132,7 +132,6 @@ class ChineseClipTextEncode:
     RETURN_NAMES = ("conditioning",)
     FUNCTION = "encode_with_translation"
     CATEGORY = "Xktools/翻译"
-    OUTPUT_NODE = True
     
     def encode_with_translation(self, clip, chinese_text, auto_translate, app_id, app_key, save_config=False):
         """
