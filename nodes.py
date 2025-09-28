@@ -201,10 +201,10 @@ class ChineseClipTextEncode:
             cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
             
             # 返回UI显示和conditioning
-             return {
-                 "ui": {"text": [ui_text]},
-                 "result": ([[cond, {"pooled_output": pooled}]],)
-             }
+            return {
+                "ui": {"text": [ui_text]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
             
         except Exception as e:
             error_msg = f"翻译过程中发生错误：{str(e)}"
