@@ -105,6 +105,11 @@ class ChineseClipTextEncode:
                     "default": "一个美丽的女孩，长发飘逸，微笑着看向镜头",
                     "placeholder": "请输入中文提示词..."
                 }),
+                "auto_translate": ("BOOLEAN", {
+                    "default": True,
+                    "label_on": "自动翻译",
+                    "label_off": "不翻译"
+                }),
                 "app_id": ("STRING", {
                     "default": api_config.get('app_id', ''),
                     "placeholder": "请输入百度翻译API的APP ID"
@@ -129,13 +134,14 @@ class ChineseClipTextEncode:
     CATEGORY = "Xktools/翻译"
     OUTPUT_NODE = True
     
-    def encode_with_translation(self, clip, chinese_text, app_id, app_key, save_config=False):
+    def encode_with_translation(self, clip, chinese_text, auto_translate, app_id, app_key, save_config=False):
         """
         翻译中文并进行CLIP编码
         
         Args:
             clip: CLIP模型
             chinese_text (str): 中文输入文本
+            auto_translate (bool): 是否自动翻译
             app_id (str): 百度翻译API的APP ID
             app_key (str): 百度翻译API的密钥
             save_config (bool): 是否保存配置
@@ -157,6 +163,15 @@ class ChineseClipTextEncode:
                  "ui": {"text": [error_msg]},
                  "result": ([[cond, {"pooled_output": pooled}]],)
              }
+        
+        # 如果不自动翻译，直接使用原文进行编码
+        if not auto_translate:
+            tokens = clip.tokenize(chinese_text.strip())
+            cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
+            return {
+                "ui": {"text": [f"使用原文: {chinese_text.strip()}"]},
+                "result": ([[cond, {"pooled_output": pooled}]],)
+            }
         
         if not app_id.strip() or not app_key.strip():
             error_msg = "错误：请配置百度翻译API的APP ID和密钥\n\n请访问 https://fanyi-api.baidu.com/ 申请API"
