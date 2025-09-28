@@ -41,12 +41,6 @@ class ChineseClipTextEncode:
                     "default": False,
                     "label_on": "保存配置",
                     "label_off": "不保存"
-                }),
-                "translation_result": ("STRING", {
-                    "default": "翻译结果将在这里显示...",
-                    "multiline": True,
-                    "readonly": True,
-                    "placeholder": "翻译结果将在这里显示..."
                 })
             }
         }
@@ -56,7 +50,7 @@ class ChineseClipTextEncode:
     FUNCTION = "encode_with_translation"
     CATEGORY = "Xktools/翻译"
     
-    def encode_with_translation(self, clip, chinese_text, auto_translate, app_id, app_key, save_config=False, translation_result="翻译结果将在这里显示..."):
+    def encode_with_translation(self, clip, chinese_text, auto_translate, app_id, app_key, save_config=False):
         """
         翻译中文并进行CLIP编码
         
