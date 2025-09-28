@@ -129,7 +129,7 @@ class ChineseClipTextEncode:
         }
     
     RETURN_TYPES = ("CONDITIONING",)
-    RETURN_NAMES = ("conditioning",)
+    RETURN_NAMES = ("条件",)
     FUNCTION = "encode_with_translation"
     CATEGORY = "Xktools/翻译"
     
