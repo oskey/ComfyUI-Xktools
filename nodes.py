@@ -41,11 +41,6 @@ class ChineseClipTextEncode:
                     "default": False,
                     "label_on": "保存配置",
                     "label_off": "不保存"
-                }),
-                "translation_result": ("STRING", {
-                    "default": "翻译结果将在这里显示...",
-                    "multiline": True,
-                    "forceInput": False
                 })
             }
         }
