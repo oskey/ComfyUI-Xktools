@@ -118,7 +118,7 @@ class BatchChineseToEnglishTranslator:
                 }),
                 "separator": ("STRING", {
                     "default": ", ",
-                    "placeholder": "翻译结果分隔符"
+                    "placeholder": "多个翻译结果之间的分隔符，如：逗号空格、换行符等"
                 })
             },
             "optional": {
