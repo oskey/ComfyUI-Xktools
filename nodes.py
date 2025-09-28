@@ -48,8 +48,6 @@ class ChineseToEnglishTranslator:
     RETURN_NAMES = ("english_text",)
     FUNCTION = "translate_text"
     CATEGORY = "Xktools/翻译"
-    OUTPUT_NODE = True
-    OUTPUT_IS_LIST = (False,)
     
     def translate_text(self, chinese_text, app_id, app_key, auto_translate=True, save_config=False):
         """
@@ -86,9 +84,9 @@ class ChineseToEnglishTranslator:
         # 执行翻译
         try:
             result = translator.translate(chinese_text.strip())
-            # 返回翻译结果，确保UI更新
+            # 返回翻译结果，确保CLIP兼容性
             result_str = str(result)
-            return {"ui": {"text": [result_str]}, "result": (result_str,)}
+            return (result_str,)
         except Exception as e:
             return (f"翻译过程中发生错误：{str(e)}",)
 
@@ -134,8 +132,6 @@ class BatchChineseToEnglishTranslator:
     RETURN_NAMES = ("english_prompts",)
     FUNCTION = "batch_translate"
     CATEGORY = "Xktools/翻译"
-    OUTPUT_NODE = True
-    OUTPUT_IS_LIST = (False,)
     
     def batch_translate(self, chinese_texts, app_id, app_key, separator=", ", save_config=False):
         """
@@ -182,10 +178,10 @@ class BatchChineseToEnglishTranslator:
             except Exception as e:
                 return (f"翻译 '{line}' 时发生错误：{str(e)}",)
         
-        # 合并结果，确保UI更新
+        # 合并结果，确保CLIP兼容性
         final_result = separator.join(translated_results)
         result_str = str(final_result)
-        return {"ui": {"text": [result_str]}, "result": (result_str,)}
+        return (result_str,)
 
 
 # 节点映射
